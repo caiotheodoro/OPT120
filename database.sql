@@ -19,3 +19,5 @@ activityId INTEGER FOREIGN KEY REFERENCES ACTIVITY(id) NOT NULL,
 deliver datetime,
 grade double
 )
+
+-- /
