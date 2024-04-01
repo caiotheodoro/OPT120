@@ -1,9 +1,9 @@
 version: "3.7"
 
 services:
-  taxonhub_db:
+  ipt120db:
     image: postgres
-    container_name: taxonhub_db
+    container_name: ipt120db
     restart: always
     ports:
       - 5432:5432

@@ -21,3 +21,24 @@ grade double
 )
 
 -- /
+
+CREATE TABLE "user" (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    email VARCHAR(200) NOT NULL,
+    password VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE activity (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description VARCHAR(500) NOT NULL,
+    "date" TIMESTAMP NOT NULL
+);
+
+CREATE TABLE user_activity (
+    userId INTEGER REFERENCES "user"(id) NOT NULL,
+    activityId INTEGER REFERENCES activity(id) NOT NULL,
+    deliver TIMESTAMP,
+    grade DOUBLE PRECISION
+);
