@@ -6,9 +6,8 @@ import 'package:frontend/settings/keys.dart';
 import 'package:frontend/utils/api.dart';
 import 'package:http/http.dart' as http;
 
-
 class UsersPage extends StatefulWidget {
-   const UsersPage({super.key, required this.title});
+  const UsersPage({super.key, required this.title});
 
   final String title;
 
@@ -17,19 +16,17 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
-  
-
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final apiUtils = ApiUtils();
 
-
   List<Map<String, dynamic>> users = [];
 
-@override
+  @override
   void initState() {
     super.initState();
+    this.users = [];
     handleFetchUsers();
   }
 
@@ -40,14 +37,12 @@ class _UsersPageState extends State<UsersPage> {
     });
   }
 
-
-  
   @override
   Widget build(BuildContext context) {
     return CommonLayout(
       pageTitle: widget.title,
-      items: users,
-       itemBuilder: (context, item) {
+      items: users ?? [],
+      itemBuilder: (context, item) {
         // Customize how each item is displayed in the list
         return ListTile();
       },
@@ -74,20 +69,21 @@ class _UsersPageState extends State<UsersPage> {
           ),
         ),
         const SizedBox(height: 8.0),
-         Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: TextField(
-                controller: passwordController,
-                obscureText: true,
-                enableSuggestions: false,
-                autocorrect: false,
-                decoration: const InputDecoration(
-                  labelText: 'Senha',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: TextField(
+            controller: passwordController,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(
+              labelText: 'Senha',
+              border: OutlineInputBorder(),
             ),
-      ], onSubmit: () async {
+          ),
+        ),
+      ],
+      onSubmit: () async {
         final url = Uri.parse('http://localhost:3025/users');
         final response = await http.post(
           url,
