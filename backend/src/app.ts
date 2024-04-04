@@ -12,7 +12,6 @@ app.get("/", async (req, res) => {
 app.get("/users", async (req, res) => {
   const response = await pool.query('SELECT id, name, email FROM "user"');
   console.log(response.rows);
-  //send response body and status code
   res.status(200).send(response.rows);
 });
 
@@ -48,26 +47,11 @@ app.delete("/api/users/delete/:id", async (req, res) => {
   res.status(200).send(`User deleted with ID: ${req.params.id}`);
 });
 
-//activities
 app.get("/activities", async (req, res) => {
   const response = await pool.query('SELECT * FROM "activity"');
   console.log(response.rows);
   res.status(200).send(response.rows);
 });
-
-// CREATE TABLE activity (
-//   id SERIAL PRIMARY KEY,
-//   title VARCHAR(200) NOT NULL,
-//   description VARCHAR(500) NOT NULL,
-//   "date" TIMESTAMP NOT NULL
-// );
-
-// CREATE TABLE user_activity (
-//   userId INTEGER REFERENCES "user"(id) NOT NULL,
-//   activityId INTEGER REFERENCES activity(id) NOT NULL,
-//   deliver TIMESTAMP,
-//   grade DOUBLE PRECISION
-// );
 
 app.post("/activities", async (req, res) => {
   console.log(req.body);
@@ -100,7 +84,6 @@ app.delete("/api/activities/delete/:id", async (req, res) => {
   res.status(200).send(`Activity deleted with ID: ${req.params.id}`);
 });
 
-//user_activity
 app.get("/user-activities", async (req, res) => {
   const response = await pool.query(
     'SELECT ( \
@@ -113,7 +96,6 @@ app.get("/user-activities", async (req, res) => {
       LEFT JOIN "user" u ON "user_activity".userId = u.id \
       LEFT JOIN "activity" ac ON "user_activity".activityId = ac.id',
   );
-  // { row: '("Caio 1",Teste,"2001-09-01 00:00:00",8.6)' }, format this response
 
   const formatttedResponse = response.rows.map((row) => {
     const formattedRow = row.row

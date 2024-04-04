@@ -10,8 +10,6 @@ void main() {
   runApp(const MyApp());
 }
 
-
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -21,14 +19,15 @@ class MyApp extends StatelessWidget {
       title: 'Usuários',
       initialRoute: '/users',
       theme: ThemeData(
-       useMaterial3: true,
+        useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFE0E0E0),
       ),
       home: const UsersPage(title: 'Usuarios'),
       routes: {
         '/users': (context) => const UsersPage(title: 'Usuarios'),
         '/activity': (context) => const ActivitiesPage(title: 'Atividades'),
-        '/user-activities': (context) => const UserActivityPage(title: 'Atividades do Usuario'),
+        '/user-activities': (context) =>
+            const UserActivityPage(title: 'Atividades do Usuario'),
       },
     );
   }

@@ -43,7 +43,6 @@ class _UsersPageState extends State<UsersPage> {
       pageTitle: widget.title,
       items: users ?? [],
       itemBuilder: (context, item) {
-        // Customize how each item is displayed in the list
         return ListTile();
       },
       formFields: [

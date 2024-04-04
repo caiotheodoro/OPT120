@@ -63,7 +63,6 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       pageTitle: widget.title,
       items: activities,
       itemBuilder: (context, item) {
-        // Customize how each item is displayed in the list
         return ListTile();
       },
       formFields: [

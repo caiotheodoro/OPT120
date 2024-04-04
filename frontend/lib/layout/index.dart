@@ -36,19 +36,19 @@ class CommonLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CustomButtonStyle cancelStyle = CustomButtonStyle(
-      backgroundColor: Colors.white, // Example background color
-      hoverColor: Colors.grey[200]!, // Example hover color
-      borderColor: Colors.grey[350]!, // Example border color
-      borderRadius: 8.0, // Example border radius
-      padding: 10.0, // Example padding
+      backgroundColor: Colors.white,
+      hoverColor: Colors.grey[200]!,
+      borderColor: Colors.grey[350]!,
+      borderRadius: 8.0,
+      padding: 10.0,
     );
 
     CustomButtonStyle submitStyle = CustomButtonStyle(
-      backgroundColor: const Color(0xFF178FFE), // Example background color
+      backgroundColor: const Color(0xFF178FFE),
       hoverColor: const Color(0xFF27568E),
-      borderColor: Colors.grey[350]!, // Example border color
-      borderRadius: 8.0, // Example border radius
-      padding: 10.0, // Example padding
+      borderColor: Colors.grey[350]!,
+      borderRadius: 8.0,
+      padding: 10.0,
     );
 
     return Scaffold(

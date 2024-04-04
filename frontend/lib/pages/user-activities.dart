@@ -136,7 +136,6 @@ class _UserActivityPageState extends State<UserActivityPage> {
           ),
         ),
         const SizedBox(height: 8),
-        //float input
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: TextField(
