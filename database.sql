@@ -36,9 +36,20 @@ CREATE TABLE activity (
     "date" TIMESTAMP NOT NULL
 );
 
+
 CREATE TABLE user_activity (
+    id SERIAL PRIMARY KEY,
     userId INTEGER REFERENCES "user"(id) NOT NULL,
     activityId INTEGER REFERENCES activity(id) NOT NULL,
     deliver TIMESTAMP,
     grade DOUBLE PRECISION
 );
+
+
+INSERT INTO "user" (name, email, password) VALUES ('teste', 'test@example.com', 'password');
+
+INSERT INTO activity (title, description, "date") VALUES ('Activity 1', 'Description 1', '2022-01-01 10:00:00');
+
+INSERT INTO user_activity (userId, activityId, deliver, grade) VALUES (1, 1, '2022-01-01 12:00:00', 9.5);
+
+

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/layout/index.dart';
-import 'package:frontend/utils/api.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:frontend/utils/activity.dart';
+import 'package:frontend/utils/user-activity.dart';
+import 'package:frontend/utils/user.dart';
 
 import 'package:intl/intl.dart';
 
@@ -15,7 +15,10 @@ class UserActivityPage extends StatefulWidget {
 }
 
 class _UserActivityPageState extends State<UserActivityPage> {
-  final apiUtils = ApiUtils();
+  String? id = '';
+  final userActivityApiHelper = UserActivityApiHelper();
+  final userApiHelper = UserApiHelper();
+  final activityApiHelper = ActivityApiHelper();
   final dateController = TextEditingController();
   final gradeController = TextEditingController();
 
@@ -37,7 +40,7 @@ class _UserActivityPageState extends State<UserActivityPage> {
   }
 
   Future<void> handleFetchUsers() async {
-    final List<Map<String, dynamic>> users = await apiUtils.fetchUsers();
+    final List<Map<String, dynamic>> users = await userApiHelper.fetchUsers();
     setState(() {
       this.users = users;
     });
@@ -45,7 +48,7 @@ class _UserActivityPageState extends State<UserActivityPage> {
 
   Future<void> handleFetchActivities() async {
     final List<Map<String, dynamic>> activities =
-        await apiUtils.fetchActivities();
+        await activityApiHelper.fetchActivities();
     setState(() {
       this.activities = activities;
     });
@@ -53,7 +56,7 @@ class _UserActivityPageState extends State<UserActivityPage> {
 
   Future<void> handleFetchUserActivities() async {
     final List<Map<String, dynamic>> userActivities =
-        await apiUtils.fetchUserActivities();
+        await userActivityApiHelper.fetchUserActivities();
     setState(() {
       this.userActivities = userActivities;
     });
@@ -75,6 +78,15 @@ class _UserActivityPageState extends State<UserActivityPage> {
       });
     }
   }
+
+      Future<void> handleClearFields() async {
+      dateController.clear();
+      gradeController.clear();
+      selectedUser = null;
+      selectedActivity = null;
+      id = '';
+      handleFetchUserActivities();
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -149,31 +161,20 @@ class _UserActivityPageState extends State<UserActivityPage> {
         )
       ],
       onSubmit: () async {
-        print(jsonEncode(<String, dynamic>{
-          'userId': selectedUser!['id'],
-          'activityId': selectedActivity!['id'],
-          'deliver': selectedDate,
-          'grade': int.parse(gradeController.text),
-        }));
-        final url = Uri.parse('http://localhost:3025/user-activities');
-
-        final response = await http.post(
-          url,
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, dynamic>{
-            'userId': selectedUser!['id'],
-            'activityId': selectedActivity!['id'],
-            'deliver': selectedDate,
-            'grade': int.parse(gradeController.text),
-          }),
+       await userActivityApiHelper.createUserActivity(
+          id,
+          selectedUser!['id'],
+          selectedActivity!['id'],
+          selectedDate,
+          int.parse(gradeController.text),
         );
-        if (response.statusCode == 201) {
-          handleFetchUserActivities();
-        } else {
-          print('deu ruim: ${response.statusCode}');
-        }
+        handleClearFields();
+      },
+      onDelete: (id) async {
+        await userActivityApiHelper.deleteUserActivity(id);
+        handleClearFields();
+      },
+       onEdit: (id) async {
       },
     );
   }

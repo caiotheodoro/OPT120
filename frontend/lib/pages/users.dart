@@ -1,10 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/layout/index.dart';
-import 'package:frontend/settings/keys.dart';
-import 'package:frontend/utils/api.dart';
-import 'package:http/http.dart' as http;
+import 'package:frontend/utils/user.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key, required this.title});
@@ -16,10 +13,11 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
+  String? id = '';
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final apiUtils = ApiUtils();
+  final userApiHelper = UserApiHelper();
 
   List<Map<String, dynamic>> users = [];
 
@@ -31,11 +29,20 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   Future<void> handleFetchUsers() async {
-    final List<Map<String, dynamic>> users = await apiUtils.fetchUsers();
+    final List<Map<String, dynamic>> users = await userApiHelper.fetchUsers();
     setState(() {
       this.users = users;
     });
   }
+
+   Future<void> handleClearFields() async {
+     // Add a return statement at the end of the function
+      nameController.clear();
+      emailController.clear();
+      passwordController.clear();
+      id = '';
+      await handleFetchUsers();
+   }
 
   @override
   Widget build(BuildContext context) {
@@ -83,27 +90,27 @@ class _UsersPageState extends State<UsersPage> {
         ),
       ],
       onSubmit: () async {
-        final url = Uri.parse('http://localhost:3025/users');
-        final response = await http.post(
-          url,
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'name': nameController.text,
-            'email': emailController.text,
-            'password': passwordController.text,
-          }),
+        await userApiHelper.createUser(
+            id,
+          nameController.text,
+          emailController.text,
+          passwordController.text,
         );
-        if (response.statusCode == 201) {
-          handleFetchUsers();
-          nameController.clear();
-          emailController.clear();
-          passwordController.clear();
-          RIKeys.usersKey.currentState!.openEndDrawer();
-        } else {
-          print('deu ruim: ${response.statusCode}');
-        }
+         handleClearFields();
+      },
+      onDelete: (id) async {
+        await userApiHelper.deleteUser(id);
+        handleClearFields();
+      },
+       onEdit: (id) async {
+        final user = await userApiHelper.fetchUser(id);
+        //set the info to the form fields and open the drawer
+        nameController.text = user['name'];
+        emailController.text = user['email'];
+        passwordController.text = user['password'];
+        this.id = id.toString();
+
+      
       },
     );
   }

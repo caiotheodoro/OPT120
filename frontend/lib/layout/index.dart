@@ -10,6 +10,8 @@ class CommonLayout extends StatelessWidget {
       itemBuilder;
   final List<Widget> formFields;
   final Function() onSubmit;
+  final Function(dynamic id) onDelete;
+  final Function (dynamic id) onEdit;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   CommonLayout({
@@ -19,6 +21,8 @@ class CommonLayout extends StatelessWidget {
     required this.itemBuilder,
     required this.formFields,
     required this.onSubmit,
+    required this.onDelete,
+    required this.onEdit,
   });
 
   int getCurrentRoutePosition({BuildContext? context}) {
@@ -32,6 +36,7 @@ class CommonLayout extends StatelessWidget {
 
     return routes.indexOf(currentRoute!);
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -72,14 +77,38 @@ class CommonLayout extends StatelessWidget {
               color: Colors.black,
               fontFamily: 'Inter',
             ),
-            columns: items.first.keys
-                .map((key) => DataColumn(label: Text(key.toUpperCase())))
-                .toList(),
+            columns: [
+              ...(items.isNotEmpty ? items.first.keys
+                  .map((key) => DataColumn(label: Text(key.toUpperCase())))
+                  .toList() : []),
+              items.isNotEmpty ? DataColumn(label: Text('Ações')) :  DataColumn(label: Text('Nenhum item encontrado.')), // Add actions column
+            ],
             rows: items
                 .map((item) => DataRow(
-                      cells: item.keys
-                          .map((key) => DataCell(Text(item[key].toString())))
-                          .toList(),
+                      cells: [
+                        ...item.keys
+                            .map((key) => DataCell(Text(item[key].toString())))
+                            .toList(),
+                        DataCell(Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                onEdit(item['id']);
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  _scaffoldKey.currentState!.openEndDrawer();
+                                });
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                  onDelete(item['id']);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
+                        )),
+                      ],
                     ))
                 .toList(),
           ),
@@ -159,7 +188,10 @@ class CommonLayout extends StatelessWidget {
                         ),
                       ),
                       ElevatedButton(
-                          onPressed: onSubmit,
+                          onPressed: () {
+                            onSubmit();
+                            Navigator.of(context).pop();
+                          },
                           style: submitStyle.getStyle(),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),

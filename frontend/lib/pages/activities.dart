@@ -1,11 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/layout/index.dart';
-import 'package:frontend/settings/keys.dart';
-import 'package:frontend/utils/api.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:http/http.dart' as http;
+import 'package:frontend/utils/activity.dart';
 import 'package:intl/intl.dart';
 
 class ActivitiesPage extends StatefulWidget {
@@ -17,10 +13,11 @@ class ActivitiesPage extends StatefulWidget {
 }
 
 class _ActivitiesPageState extends State<ActivitiesPage> {
+  String? id = '';
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final dateController = TextEditingController();
-  final apiUtils = ApiUtils();
+  final activityApiHelper = ActivityApiHelper();
 
   List<Map<String, dynamic>> activities = [];
   dynamic selectedDate;
@@ -34,7 +31,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   Future<void> handleFetchActivities() async {
     final List<Map<String, dynamic>> activities =
-        await apiUtils.fetchActivities();
+        await activityApiHelper.fetchActivities();
     setState(() {
       this.activities = activities;
     });
@@ -55,6 +52,14 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
             DateTime.parse(pickedDate.toString()).toIso8601String();
       });
     }
+  }
+
+    Future<void> handleClearFields() async {
+    titleController.clear();
+    descriptionController.clear();
+    dateController.clear();
+    handleFetchActivities();
+    id = '';
   }
 
   @override
@@ -104,26 +109,24 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
         const SizedBox(height: 8.0),
       ],
       onSubmit: () async {
-        final url = Uri.parse('http://localhost:3025/activities');
-        final response = await http.post(
-          url,
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'title': titleController.text,
-            'description': descriptionController.text,
-            'date': selectedDate,
-          }),
+        await activityApiHelper.createActivity(
+          id,
+          titleController.text,
+          descriptionController.text,
+          selectedDate,
         );
-        if (response.statusCode == 201) {
-          handleFetchActivities();
-          titleController.clear();
-          descriptionController.clear();
-          RIKeys.activityKey.currentState!.openEndDrawer();
-        } else {
-          print('deu ruim: ${response.statusCode}');
-        }
+        handleClearFields();
+      },
+      onDelete: (id) async  {
+        await activityApiHelper.deleteActivity(id);
+        handleClearFields();
+      },
+      onEdit: (id) async {
+        final activity = await activityApiHelper.fetchActivity(id);
+        titleController.text = activity['title'];
+        descriptionController.text = activity['description'];
+        dateController.text = activity['date'];
+        this.id = id.toString();
       },
     );
   }
