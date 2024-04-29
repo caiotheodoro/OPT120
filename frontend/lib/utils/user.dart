@@ -38,14 +38,14 @@ Future<List<Map<String, dynamic>>> fetchUsers() async {
     }
   }
 
-   Future<void> deleteUser(int id) async {
+   Future<void> deleteUser(String? id) async {
     final url = Uri.parse('$baseUrl/users/$id');
     final response = await http.delete(url);
     if (response.statusCode != 200) {
       throw Exception('Falha Ao deletar user: ${response.statusCode}');
     }
   }
-  Future<Map<String, dynamic>> fetchUser(int id) async {
+  Future<Map<String, dynamic>> fetchUser(String? id) async {
     final url = Uri.parse('$baseUrl/users/$id');
     final response = await http.get(url);
     if (response.statusCode == 200) {

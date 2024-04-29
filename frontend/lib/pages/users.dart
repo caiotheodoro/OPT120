@@ -103,11 +103,9 @@ class _UsersPageState extends State<UsersPage> {
         handleClearFields();
       },
        onEdit: (id) async {
-        final user = await userApiHelper.fetchUser(id);
-        //set the info to the form fields and open the drawer
+        final user = await userApiHelper.fetchUser(id.toString());
         nameController.text = user['name'];
         emailController.text = user['email'];
-        passwordController.text = user['password'];
         this.id = id.toString();
 
       

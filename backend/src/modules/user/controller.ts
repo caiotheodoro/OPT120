@@ -2,6 +2,10 @@ import express, { Request, Response, Router } from "express";
 import { Pool } from "pg";
 import { UserRepository } from "./repository/user";
 import { CreateUserDTO, UpdateUserDTO } from "./dtos";
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export class UserController {
   private router: Router;
@@ -33,12 +37,15 @@ export class UserController {
   create = async (req: Request, res: Response) => {
     try {
       const { name, email, password } = req.body;
-      const createUserDTO: CreateUserDTO = { name, email, password };
+
+      const hash = await bcrypt.hash(password, 10);
+      const createUserDTO: CreateUserDTO = { name, email, password: hash };
+
       await this.userRepository.createUser(createUserDTO);
-      res.status(201).json({ message: "User Criada com sucesso" });
+      res.status(201).json({ message: "Usuario Criado com sucesso" });
     } catch (error) {
-      
       res.status(500).json({ message: "Erro Interno!" });
+      console.log(error)
     }
   };
 

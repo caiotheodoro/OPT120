@@ -12,8 +12,22 @@ export class UserRepository implements UserInterface {
   }
 
   async getUsers(): Promise<UserEntity[]> {
-    const response = await this.#pool.query('SELECT * FROM "user"  ORDER BY id ASC');
-    return response.rows;
+    const response = await this.#pool.query('SELECT (id,name,email) FROM "user"  ORDER BY id ASC');
+
+    const formatttedResponse = response.rows.map((row) => {
+      const formattedRow = row.row
+        .replace("(", "")
+        .replace(")", "")
+        .replace(/"/g, "")
+        .split(",");
+      return {
+        id: formattedRow[0],
+        name: formattedRow[1],
+        email: formattedRow[2],
+      };
+    });
+
+    return formatttedResponse as UserEntity[];
   }
 
   async createUser({ name, email, password }: CreateUserDTO): Promise<void> {
@@ -26,6 +40,13 @@ export class UserRepository implements UserInterface {
   async getUserById(id:string): Promise<UserEntity> {
     const response = await this.#pool.query('SELECT * FROM "user" WHERE id = $1', [
       id,
+    ]);
+    return response.rows[0];
+  }
+
+  async getUserByEmail(email:string): Promise<UserEntity> {
+    const response = await this.#pool.query('SELECT * FROM "user" WHERE email = $1', [
+      email,
     ]);
     return response.rows[0];
   }
